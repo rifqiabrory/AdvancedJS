@@ -1,0 +1,71 @@
+const data = [
+  {
+    "category_id": 5,
+    "category_description": "e-Submissions ",
+    "max_size_per_file": 90000,
+    "updated_by": "c29324",
+    "updated_date": "2019-10-14 09:08:14.381505",
+    "display_order": 3,
+    "created_by": "c99113",
+    "created_date": "2019-10-04 10:09:01.905998"
+  },
+  {
+    "category_id": 1,
+    "category_description": "aales Quotation System edit",
+    "max_size_per_file": 60000,
+    "updated_by": "c29324",
+    "updated_date": "2019-10-14 09:10:51.780028",
+    "display_order": 7,
+    "created_by": "c99113",
+    "created_date": "2019-10-04 10:09:01.905998"
+  },
+  {
+    "category_id": 3,
+    "category_description": "Sales Quotation System edit",
+    "max_size_per_file": 60000,
+    "updated_by": "c29324",
+    "updated_date": "2019-10-14 09:10:51.780028",
+    "display_order": 7,
+    "created_by": "c99113",
+    "created_date": "2019-10-04 10:09:01.905998"
+  },
+  {
+    "category_id": 4,
+    "category_description": "Sales Quotation System (SQS) Bancassurance",
+    "max_size_per_file": 70000,
+    "updated_by": "c84045",
+    "updated_date": "2019-10-04 10:09:01.91384",
+    "display_order": 2,
+    "created_by": "c99113",
+    "created_date": "2019-10-04 10:09:01.905998"
+  },
+  {
+    "category_id": 2,
+    "category_description": "Aales Quotation System edit",
+    "max_size_per_file": 60000,
+    "updated_by": "c29324",
+    "updated_date": "2019-10-14 09:10:51.780028",
+    "display_order": 7,
+    "created_by": "c99113",
+    "created_date": "2019-10-04 10:09:01.905998"
+  }
+];
+
+let attr = 'category_description';
+// let attr = 'max_size_per_file';
+let isAsc = true;
+
+let val = null;
+
+const result = data.sort((a, b) => {
+      if(attr !== 'max_size_per_file'){
+        return compare(a[attr].toLowerCase(), b[attr].toLowerCase(), isAsc);
+      }
+      return compare(a[attr], b[attr], isAsc);
+    });
+
+function compare(a, b, isAsc) {
+  // return (a > b ? -1 : 1) * (isAsc ? 1 : -1);
+  return (a > b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+console.table(result);
