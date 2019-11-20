@@ -142,3 +142,13 @@ onDownload(data){
       console.log(e);
     });
   }
+
+
+//Note
+  editDocument(data){
+  	this.navCtrl.push('UploadDocumentPage',data);
+  }
+
+  newDocument(){
+  	this.navCtrl.push('UploadDocumentPage', this.selectedCategory);
+  }
