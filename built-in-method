@@ -1,0 +1,29 @@
+const data = [
+  "Samsung", "Apple", "Xiomi"
+];
+
+const copiedArr = [...data, "Oppo", "Nokia"];
+const copiedToObj = {...copiedArr, 5:"Vivo"};
+console.log(copiedArr)
+console.log(copiedToObj);
+
+const merge = copiedArr.concat(data);
+console.log(merge);
+
+const iterator = data.entries();
+console.log(iterator.next().value);
+
+const join = data.join();
+console.log(join)
+
+const lasIndexOf = data.lastIndexOf("Xiomi");
+console.log(lasIndexOf);
+
+const filter = data.filter(word => word.length > 5);
+console.log(filter);
+
+const fill = data.fill("Realmi", 2, 3);
+console.log(fill);
+
+const find = data.find(word => word === "Apple");
+console.log(find);
