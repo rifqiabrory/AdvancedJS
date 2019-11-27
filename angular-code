@@ -1,0 +1,194 @@
+ editDocument(data){
+  	this.navCtrl.push('UploadDocumentPage',data);
+  }
+
+  newDocument(){
+  	this.navCtrl.push('UploadDocumentPage', this.selectedCategory);
+  }
+
+  downloadConfirm(data){
+    console.log("data "+JSON.stringify(data));
+    let confirm = this.alertCtrl.create({
+      title: 'Confirmation',
+      message: ' Do you want to download this document file ? ',
+      enableBackdropDismiss: true,
+      buttons: [
+        {
+          text: 'NO',
+          handler: () => {
+          }
+        },
+        {
+          text: 'YES',
+          handler: () => {
+            this.onDownload(data);
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
+
+  onDownload(data){
+    this.presentLoading();
+    this.loading.present().then(() => {
+      this.cmProvider.downloadDocument(JSON.stringify({"document_id":data.documentId})).subscribe((res) => {
+        this.loading.dismissAll();
+        if(res.status == 102){
+          this.messageHandler('Success', `Document file ${data.fileName} successfully downloaded.`);
+          if(window.navigator.msSaveBlob){
+            let data = res.data;
+            let tmpFileType = res.data.file_type;
+            let filetype = "";
+            let filename = "";
+            
+            if (tmpFileType == "png"){
+              filetype = "image/png";
+              filename = data.file_name + ".png";
+            } else if(tmpFileType == "jpg"){
+              filetype = "image/jpeg";
+              filename = data.file_name + ".png";
+            } else if(tmpFileType == "gif"){
+              filetype = "image/gif";
+              filename = data.file_name + ".png";
+            } else if(tmpFileType == "pdf"){
+              filetype = "application/pdf";
+              filename = data.file_name + ".pdf";
+            } else if(tmpFileType == "ppt"){
+              filetype = "application/vnd.ms-powerpoint";
+              filename = data.file_name + ".ppt";
+            } else if(tmpFileType == "pptx"){
+              filetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+              filename = data.file_name + ".pptx";
+            } else if(tmpFileType == "xls"){
+              filetype = "application/vnd.ms-excel";
+              filename = data.file_name + ".xls";
+            } else if(tmpFileType == "xlsx"){
+              filetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+              filename = data.file_name + ".xlsx";
+            } else if(tmpFileType == "doc"){
+              filetype = "application/msword";
+              filename = data.file_name + ".doc";
+            } else if(tmpFileType == "docx"){
+              filetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+              filename = data.file_name + ".docx";
+            } else if(tmpFileType == "rar"){
+              filetype = "application/x-rar-compressed";
+              filename = data.file_name + ".rar";
+            } else if(tmpFileType == "zip"){
+              filetype = "application/x-zip-compressed";
+              filename = data.file_name + ".zip";
+            } else if (tmpFileType == "csv") {
+              filetype = "text/csv";
+              filename = data.file_name + ".csv";
+            }
+
+            let file = '';
+            file = data.fileBase64 + '';
+            var b64toBlob = (b64Data, contentType, sliceSize) => {
+              contentType = contentType || '';
+              sliceSize = sliceSize || 512;
+              var byteCharacters = atob(b64Data);
+              var byteArrays = [];
+              for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                  var slice = byteCharacters.slice(offset, offset + sliceSize);
+                  var byteNumbers = new Array(slice.length);
+                  for (var i = 0; i < slice.length; i++) {
+                      byteNumbers[i] = slice.charCodeAt(i);
+                  }
+                  var byteArray = new Uint8Array(byteNumbers);
+                  byteArrays.push(byteArray);
+              }
+
+              var blob = new Blob(byteArrays, { type: contentType });
+              return blob;
+            }
+
+            var blob = b64toBlob(file, filetype, 512);
+            window.navigator.msSaveBlob(blob, filename);
+
+          }else {
+            let data = res.data;
+            let tmpFileType = data.file_type;
+            let filename = "";
+            let file = '';
+            file = data.fileBase64 + '';
+            filename = data.file_name;
+
+            var bstr = atob(file);
+            var n = bstr.length, u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            
+            if (tmpFileType == "png"){
+              data.file_type = "image/png";
+            } else if(tmpFileType == "jpg"){
+              data.file_type = "image/jpeg";
+            } else if(tmpFileType == "gif"){
+              data.file_type = "image/gif";
+            } else if(tmpFileType == "pdf"){
+              data.file_type = "application/pdf";
+            } else if(tmpFileType == "ppt"){
+              data.file_type = "application/vnd.ms-powerpoint";
+            } else if(tmpFileType == "pptx"){
+              data.file_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            } else if(tmpFileType == "xls"){
+              data.file_type = "application/vnd.ms-excel";
+            } else if(tmpFileType == "xlsx"){
+              data.file_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            } else if(tmpFileType == "doc"){
+              data.file_type = "application/msword";
+            } else if(tmpFileType == "docx"){
+              data.file_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            } else if(tmpFileType == "rar"){
+              data.file_type = "application/x-rar-compressed";
+            } else if(tmpFileType == "zip"){
+              data.file_type = "application/x-zip-compressed";
+            } else if (tmpFileType == "csv") {
+              data.file_type = "text/csv";
+            }
+
+            var fblob = new File([u8arr], filename, { type: data.file_type });
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(fblob);
+            link.download = filename;
+            link.click();
+          }
+        }
+      }, error => {
+        this.cmUtilProv.dismissLoading();
+        this.messageHandler('Failed', `Document file ${data.fileName} failed downloaded.`);
+        if (error.error) {
+          if (error.message){
+            this.cmUtilProv.presentErrorAlert(error.message);
+          }
+        }
+      });
+    }, err => {
+      this.loading.dismissAll();
+      console.log(err);
+    }).catch((e) => {
+      this.loading.dismissAll();
+      console.log(e);
+    });
+  }
+ 
+ presentLoading() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+  }
+  
+  validateNumber(event) {
+    var charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
+    return true;
+  }
+
+  messageHandler(title: string, message: string) {
+    const alert = this
+      .alertCtrl
+      .create({ title: title, message: message, buttons: ['Ok'] });
+    alert.present();
+  }
